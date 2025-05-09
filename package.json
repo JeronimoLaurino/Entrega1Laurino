@@ -4,7 +4,9 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "mongoose": "^8.14.2"
+    "mongoose": "^8.14.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "name": "entrega1",
   "version": "1.0.0",

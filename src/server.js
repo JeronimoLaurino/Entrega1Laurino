@@ -1,35 +1,49 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import mocksRouter from './routes/mocks.router.js';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+
 import usersRouter from './routes/users.router.js';
-import petsRouter from './routes/pets.router.js';
 import adoptionRouter from './routes/adoption.router.js';
 
 dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mockDB';
+const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use('/api/mocks', mocksRouter);
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API de Adopciones y Usuarios',
+      version: '1.0.0',
+      description: 'Documentación de la API usando Swagger'
+    },
+    servers: [
+      {
+        url: `http://localhost:${port}`
+      }
+    ]
+  },
+  apis: ['./routes/*.js']
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/users', usersRouter);
 app.use('/api/adoptions', adoptionRouter);
-app.use('/api/pets', petsRouter);
 
-mongoose.connect(MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-})
-.then(() => {
-  console.log('🟢 Conectado a MongoDB');
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
+}).then(() => {
+  app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
   });
-})
-.catch(error => {
-  console.error('❌ Error al conectar a MongoDB:', error);
+}).catch(error => {
+  console.error('Error al conectar a MongoDB:', error);
 });
